@@ -634,7 +634,12 @@ fn appearance_defaults_and_legacy_theme_migrate() {
     assert_eq!(a.shown_theme(Some(true)), "darkest", "Dark mode ignores a light system");
     let dir = tmp_dir("prefs-appearance-migrate");
     let path = dir.join("preferences.json");
-    for (theme, mode, dark, light) in [("darkest", "dark", "darkest", "light"), ("dark", "dark", "dark", "light"), ("light", "light", "darkest", "light")] {
+    for (theme, mode, dark, light) in [
+        ("darkest", "dark", "darkest", "light"),
+        ("dark", "dark", "dark", "light"),
+        ("light", "light", "darkest", "light"),
+        ("shadesOfPurple", "dark", "shadesOfPurple", "light"),
+    ] {
         std::fs::write(&path, json!({"version": 2, "appearance": {"colorTheme": theme}}).to_string()).unwrap();
         let a = Preferences::load(&path).appearance;
         assert_eq!((a.appearance_mode.as_str(), a.dark_theme.as_str(), a.light_theme.as_str()), (mode, dark, light), "{theme}");
@@ -671,6 +676,8 @@ fn appearance_choices_validate_and_legacy_theme_still_selects() {
     assert_eq!(s.prefs.appearance.dark_theme, "dark", "the dark choice is kept");
     set(&mut s, "appearance.colorTheme", json!("darkest"));
     assert_eq!((s.prefs.appearance.appearance_mode.as_str(), s.prefs.appearance.dark_theme.as_str()), ("dark", "darkest"));
+    set(&mut s, "appearance.colorTheme", json!("shadesOfPurple"));
+    assert_eq!((s.prefs.appearance.appearance_mode.as_str(), s.prefs.appearance.dark_theme.as_str()), ("dark", "shadesOfPurple"));
     // the legacy Color Theme follows the mode and theme choices, so clients reading it aren't stale
     assert_eq!(s.prefs.appearance.color_theme, "darkest");
     set(&mut s, "appearance.appearanceMode", json!("light"));

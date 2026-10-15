@@ -16,29 +16,50 @@ pub enum ThemeKind {
     /// Slightly lighter grey panels (Premiere's brightness slider mid position).
     Medium,
     Light,
+    /// A custom dark theme based on Shades-of-purple-standard-buttons: deep royal purple surfaces,
+    /// standard button radii, vibrant magenta/pink accents and high-contrast light text.
+    ShadesOfPurple,
 }
 
 impl ThemeKind {
-    /// Settings ▸ Appearance ▸ Color Theme value (`darkest`, `dark`, `light`).
+    pub const ALL: [ThemeKind; 4] = [
+        ThemeKind::Dark,
+        ThemeKind::Medium,
+        ThemeKind::Light,
+        ThemeKind::ShadesOfPurple,
+    ];
+
+    /// Settings ▸ Appearance ▸ Color Theme value (`darkest`, `dark`, `light`, `shadesOfPurple`).
     pub fn pref_name(self) -> &'static str {
         match self {
             ThemeKind::Dark => "darkest",
             ThemeKind::Medium => "dark",
             ThemeKind::Light => "light",
+            ThemeKind::ShadesOfPurple => "shadesOfPurple",
+        }
+    }
+    pub fn label(self) -> &'static str {
+        match self {
+            ThemeKind::Dark => "Darkest",
+            ThemeKind::Medium => "Dark",
+            ThemeKind::Light => "Light",
+            ThemeKind::ShadesOfPurple => "Shades of Purple",
         }
     }
     pub fn from_pref(s: &str) -> ThemeKind {
         match s {
             "dark" => ThemeKind::Medium,
             "light" => ThemeKind::Light,
+            "shadesOfPurple" | "shadesofpurple" => ThemeKind::ShadesOfPurple,
             _ => ThemeKind::Dark,
         }
     }
     pub fn from_name(s: &str) -> Option<ThemeKind> {
-        match s.to_ascii_lowercase().as_str() {
+        match s.to_ascii_lowercase().replace(['-', '_'], "").as_str() {
             "dark" | "darkest" => Some(ThemeKind::Dark),
             "medium" | "grey" | "gray" => Some(ThemeKind::Medium),
             "light" => Some(ThemeKind::Light),
+            "shadesofpurple" | "shadesofpurplestandardbuttons" | "purple" => Some(ThemeKind::ShadesOfPurple),
             _ => None,
         }
     }
@@ -147,6 +168,9 @@ pub struct Tokens {
     pub radius_sm: f32,
     pub gap: f32,
     pub tab_h: f32,
+    /// Suggested / primary action button background and text (e.g. OK, Export).
+    pub primary_bg: Color32,
+    pub primary_text: Color32,
 }
 
 impl Tokens {
@@ -240,6 +264,8 @@ impl Tokens {
             radius_sm: 4.0,
             gap: 4.0,
             tab_h: 32.0,
+            primary_bg: Color32::from_rgb(0x2f, 0x6b, 0xdf),
+            primary_text: Color32::WHITE,
         };
         match kind {
             ThemeKind::Dark => dark,
@@ -330,6 +356,100 @@ impl Tokens {
                 tl_ruler_text: Color32::from_rgb(80, 80, 80),
                 ..dark
             },
+            // An adaptation of the Shades-of-purple-standard-buttons GTK theme:
+            // rich purple surfaces (#25143D, #341d57, #3b2163), standard 6 px button corners,
+            // magenta/pink accent (#FF00FF) with dark button label (#1E1E3F), and high-contrast text.
+            ThemeKind::ShadesOfPurple => Tokens {
+                kind,
+                app_bg: Color32::from_rgb(21, 11, 34),
+                header_bg: Color32::from_rgb(28, 16, 47),
+                panel_bg: Color32::from_rgb(52, 29, 87),
+                tab_bg: Color32::from_rgb(37, 20, 61),
+                tab_text: Color32::from_rgb(215, 210, 222),
+                tab_text_active: Color32::WHITE,
+                focus: Color32::from_rgb(255, 0, 255),
+                accent: Color32::from_rgb(255, 0, 255),
+                accent_hover: Color32::from_rgb(255, 72, 255),
+                text: Color32::WHITE,
+                text_dim: Color32::from_rgb(215, 210, 222),
+                text_faint: Color32::from_rgb(175, 168, 186),
+                icon: Color32::from_rgb(240, 235, 245),
+                icon_active: Color32::WHITE,
+                hover: Color32::from_rgb(67, 38, 112),
+                pressed: Color32::from_rgb(77, 44, 128),
+                field_bg: Color32::from_rgb(59, 33, 99),
+                field_border: Color32::from_rgb(70, 40, 115),
+                separator: Color32::from_rgb(21, 11, 34),
+                row_alt: Color32::from_rgb(45, 25, 75),
+                row_selected: Color32::from_rgba_unmultiplied(255, 0, 255, 48),
+                hot_text: Color32::from_rgb(255, 72, 255),
+                pill_active_bg: Color32::from_rgb(77, 44, 128),
+                clip_bar_bg: Color32::from_rgb(67, 38, 112),
+                control_surface: Color32::from_rgb(52, 29, 87),
+                control_well: Color32::from_rgb(37, 20, 61),
+                control_border: Color32::from_rgb(70, 40, 115),
+                control_handle_bg: Color32::from_rgb(59, 33, 99),
+                control_handle: Color32::from_rgb(240, 235, 245),
+                control_handle_dim: Color32::from_rgb(175, 168, 186),
+                plot_bg: Color32::from_rgb(37, 20, 61),
+                plot_grid: Color32::from_rgb(59, 33, 99),
+                plot_axis: Color32::from_rgb(70, 40, 115),
+                plot_handle: Color32::from_rgb(255, 0, 255),
+                plot_handle_dim: Color32::from_rgb(175, 168, 186),
+                meter_bg: Color32::from_rgb(21, 11, 34),
+                meter_readout_bg: Color32::from_rgb(37, 20, 61),
+                meter_clip_off: Color32::from_rgb(70, 40, 115),
+                panner_bg: Color32::from_rgb(37, 20, 61),
+                panner_border: Color32::from_rgb(70, 40, 115),
+                panner_speaker: Color32::from_rgb(175, 168, 186),
+                fader_knob: Color32::from_rgb(59, 33, 99),
+                eq_track: Color32::from_rgb(59, 33, 99),
+                eq_tick: Color32::from_rgb(95, 54, 158),
+                eq_knob: Color32::from_rgb(175, 168, 186),
+                eq_knob_active: Color32::WHITE,
+                eq_node: Color32::from_rgb(255, 0, 255),
+                eq_node_off: Color32::from_rgb(175, 168, 186),
+                crossover_handle: Color32::WHITE,
+                keyframe_plot_bg: Color32::from_rgb(37, 20, 61),
+                keyframe_plot_grid: Color32::from_rgb(59, 33, 99),
+                keyframe_plot_axis: Color32::from_rgb(70, 40, 115),
+                keyframe_handle: Color32::from_rgb(255, 0, 255),
+                switch_fill: Color32::from_rgb(255, 0, 255),
+                switch_knob: Color32::from_rgb(30, 30, 63),
+                switch_border: Color32::from_rgb(70, 40, 115),
+                slider_disabled_track: Color32::from_rgb(43, 24, 71),
+                slider_disabled_knob: Color32::from_rgb(90, 50, 140),
+                button_hover: Color32::from_rgb(67, 38, 112),
+                button_border: Color32::from_rgb(95, 54, 158),
+                caption_track_bg: Color32::from_rgb(45, 25, 75),
+                scroll_thumb: Color32::from_rgb(77, 44, 128),
+                scroll_thumb_hover: Color32::from_rgb(95, 54, 158),
+                vertical_scroll_thumb: Color32::from_rgb(77, 44, 128),
+                disabled_clip_bg: Color32::from_rgb(43, 24, 71),
+                tl_bg: Color32::from_rgb(37, 20, 61),
+                tl_track_bg: Color32::from_rgb(45, 25, 75),
+                tl_track_bg_alt: Color32::from_rgb(52, 29, 87),
+                tl_header_bg: Color32::from_rgb(37, 20, 61),
+                tl_ruler_bg: Color32::from_rgb(37, 20, 61),
+                tl_ruler_tick: Color32::from_rgb(146, 138, 158),
+                tl_ruler_text: Color32::from_rgb(215, 210, 222),
+                playhead: Color32::from_rgb(255, 0, 255),
+                track_target: Color32::from_rgb(180, 0, 180),
+                in_out_shade: Color32::from_rgba_unmultiplied(21, 11, 34, 180),
+                clip_selected_border: Color32::from_rgb(255, 0, 255),
+                render_red: Color32::from_rgb(255, 98, 126),
+                render_yellow: Color32::from_rgb(255, 224, 72),
+                render_green: Color32::from_rgb(69, 175, 99),
+                monitor_bg: Color32::from_rgb(21, 11, 34),
+                timecode: Color32::from_rgb(255, 72, 255),
+                danger: Color32::from_rgb(255, 98, 126),
+                radius: 6.0,
+                radius_sm: 4.0,
+                gap: 4.0,
+                tab_h: 32.0,
+                primary_bg: Color32::from_rgb(255, 0, 255),
+                primary_text: Color32::from_rgb(30, 30, 63),
+            },
         }
     }
 
@@ -338,26 +458,31 @@ impl Tokens {
     /// colour contrast (brighter secondary text and borders).
     pub fn with_appearance(mut self, highlight: Option<[u8; 3]>, accessible_contrast: bool) -> Self {
         if let Some([r, g, b]) = highlight {
-            let c = Color32::from_rgb(r, g, b);
-            // A highlight of the user's own also colours the theme's other blues: the same hue, as
-            // much more or less saturated and bright as each of them is than the theme's highlight.
-            // The theme's own highlight leaves them exactly as designed.
-            if c != self.accent {
-                let tint = |s: f32, v: f32| {
-                    let mut h = egui::ecolor::HsvaGamma::from(c);
-                    h.s = (h.s * s).clamp(0.0, 1.0);
-                    h.v = (h.v * v).clamp(0.0, 1.0);
-                    Color32::from(h)
-                };
-                self.focus = tint(0.92, 1.06);
-                self.playhead = self.focus;
-                self.timecode = tint(0.98, 1.09);
-                self.hot_text = self.timecode;
-                self.track_target = tint(1.0, 0.865);
+            let default_highlight = filmcraft_engine::settings::parse_hex(filmcraft_engine::settings::DEFAULT_HIGHLIGHT);
+            let is_default = Some([r, g, b]) == default_highlight;
+            if !(self.kind == ThemeKind::ShadesOfPurple && is_default) {
+                let c = Color32::from_rgb(r, g, b);
+                // A highlight of the user's own also colours the theme's other blues: the same hue, as
+                // much more or less saturated and bright as each of them is than the theme's highlight.
+                // The theme's own highlight leaves them exactly as designed.
+                if c != self.accent {
+                    let tint = |s: f32, v: f32| {
+                        let mut h = egui::ecolor::HsvaGamma::from(c);
+                        h.s = (h.s * s).clamp(0.0, 1.0);
+                        h.v = (h.v * v).clamp(0.0, 1.0);
+                        Color32::from(h)
+                    };
+                    self.focus = tint(0.92, 1.06);
+                    self.playhead = self.focus;
+                    self.timecode = tint(0.98, 1.09);
+                    self.hot_text = self.timecode;
+                    self.track_target = tint(1.0, 0.865);
+                }
+                let lift = |v: u8| v.saturating_add(16);
+                self.accent = c;
+                self.accent_hover = Color32::from_rgb(lift(r), lift(g), lift(b));
+                self.primary_bg = c;
             }
-            let lift = |v: u8| v.saturating_add(16);
-            self.accent = c;
-            self.accent_hover = Color32::from_rgb(lift(r), lift(g), lift(b));
         }
         if accessible_contrast {
             if self.kind == ThemeKind::Light {
@@ -471,13 +596,14 @@ pub fn apply_visuals(ctx: &egui::Context, t: &Tokens) {
     v.selection.bg_fill = t.accent;
     v.selection.stroke = Stroke::new(1.0, Color32::WHITE);
     v.hyperlink_color = t.accent;
-    v.window_stroke = Stroke::new(1.0, t.field_border);
-    v.window_corner_radius = egui::CornerRadius::same(6);
-    v.menu_corner_radius = egui::CornerRadius::same(6);
+    let win_corner = if t.radius >= 6.0 { t.radius as u8 } else { 6 };
+    v.window_corner_radius = egui::CornerRadius::same(win_corner);
+    v.menu_corner_radius = egui::CornerRadius::same(win_corner);
     v.popup_shadow = egui::epaint::Shadow { offset: [0, 4], blur: 16, spread: 0, color: Color32::from_black_alpha(140) };
     v.window_shadow = v.popup_shadow;
+    let widget_corner = if t.radius >= 6.0 { t.radius as u8 } else { t.radius_sm as u8 };
     for w in [&mut v.widgets.noninteractive, &mut v.widgets.inactive, &mut v.widgets.hovered, &mut v.widgets.active, &mut v.widgets.open] {
-        w.corner_radius = egui::CornerRadius::same(t.radius_sm as u8);
+        w.corner_radius = egui::CornerRadius::same(widget_corner);
     }
     v.widgets.noninteractive.bg_fill = t.panel_bg;
     v.widgets.noninteractive.weak_bg_fill = t.panel_bg;
@@ -584,7 +710,7 @@ mod tests {
     #[test]
     fn the_default_highlight_leaves_the_theme_blues_as_designed() {
         let default = filmcraft_engine::settings::parse_hex(filmcraft_engine::settings::DEFAULT_HIGHLIGHT);
-        for k in [ThemeKind::Dark, ThemeKind::Medium, ThemeKind::Light] {
+        for k in ThemeKind::ALL {
             assert_eq!(highlight_blues(&Tokens::for_kind(k).with_appearance(default, false)), highlight_blues(&Tokens::for_kind(k)), "{k:?}");
         }
     }
@@ -602,6 +728,39 @@ mod tests {
         assert!(v(t.playhead) > v(pink) && v(t.timecode) > v(pink) && v(t.track_target) < v(pink), "lighter and darker as the default blues are");
     }
 
+    fn contrast(a: Color32, b: Color32) -> f32 {
+        let lin = |v: u8| {
+            let c = f32::from(v) / 255.0;
+            if c <= 0.04045 { c / 12.92 } else { ((c + 0.055) / 1.055).powf(2.4) }
+        };
+        let lum = |c: Color32| 0.2126 * lin(c.r()) + 0.7152 * lin(c.g()) + 0.0722 * lin(c.b());
+        let (hi, lo) = if lum(a) > lum(b) { (lum(a), lum(b)) } else { (lum(b), lum(a)) };
+        (hi + 0.05) / (lo + 0.05)
+    }
+
+    #[test]
+    fn shades_of_purple_theme_parses_and_meets_contrast() {
+        let kind = ThemeKind::ShadesOfPurple;
+        assert_eq!(ThemeKind::from_name("shadesOfPurple"), Some(kind));
+        assert_eq!(ThemeKind::from_name("Shades of Purple"), Some(kind));
+        assert_eq!(ThemeKind::from_name("shades-of-purple"), Some(kind));
+        assert_eq!(ThemeKind::from_name("shades_of_purple_standard_buttons"), Some(kind));
+        assert_eq!(ThemeKind::from_name("purple"), Some(kind));
+        assert!(ThemeKind::ALL.contains(&kind));
+        let t = Tokens::for_kind(kind);
+        assert_eq!(t.kind, kind);
+        assert_eq!(t.radius, 6.0); // 6 px standard button corners
+
+        let resting = [t.header_bg, t.panel_bg, t.tab_bg, t.field_bg, t.control_surface];
+        let active = [t.hover, t.pressed];
+        for surface in resting.into_iter().chain(active) {
+            assert!(contrast(t.text, surface) >= 7.0, "text on {surface:?}");
+            assert!(contrast(t.text_dim, surface) >= 4.5, "dim text on {surface:?}");
+            assert!(contrast(t.text_faint, surface) >= 4.5, "faint text on {surface:?}");
+        }
+        assert!(contrast(t.primary_text, t.primary_bg) >= 4.5, "primary button contrast");
+    }
+
     /// Chinese media and track names must render even when the interface stays in English.
     /// Compare the rasterized glyphs with the missing-glyph box, including custom weight families.
     #[test]
@@ -616,7 +775,7 @@ mod tests {
             return;
         }
         let ctx = egui::Context::default();
-        for kind in [ThemeKind::Dark, ThemeKind::Medium, ThemeKind::Light] {
+        for kind in ThemeKind::ALL {
             install(&ctx, &Tokens::for_kind(kind));
             ctx.run_ui(egui::RawInput::default(), |_| {}).textures_delta.clear();
             ctx.fonts_mut(|fonts| {

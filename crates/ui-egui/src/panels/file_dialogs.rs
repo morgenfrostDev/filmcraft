@@ -22,11 +22,12 @@ fn modal_frame(t: &Tokens) -> Frame {
 
 fn button(app: &mut FilmcraftApp, ui: &mut Ui, id: &str, label: &str, primary: bool) -> bool {
     let t = app.tokens;
-    let text = RichText::new(label).size(13.0).color(if primary { Color32::WHITE } else { t.text });
+    let text = RichText::new(label).size(13.0).color(if primary { t.primary_text } else { t.text });
+    let cr = CornerRadius::same(if t.radius >= 6.0 { t.radius as u8 } else { 15 });
     let b = egui::Button::new(text)
         .min_size(vec2(88.0, 30.0))
-        .corner_radius(CornerRadius::same(15))
-        .fill(if primary { t.accent } else { Color32::TRANSPARENT })
+        .corner_radius(cr)
+        .fill(if primary { t.primary_bg } else { Color32::TRANSPARENT })
         .stroke(if primary { Stroke::NONE } else { Stroke::new(1.5, t.text_faint) });
     let r = ui.add(b).on_hover_cursor(egui::CursorIcon::PointingHand);
     app.auto.add(id, r.rect, label);
