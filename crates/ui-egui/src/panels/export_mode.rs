@@ -1140,12 +1140,13 @@ fn preview_column(app: &mut FilmcraftApp, ui: &mut egui::Ui, rect: Rect, seq_id:
     let go = Rect::from_min_size(pos2(rect.max.x - 120.0, rect.max.y - 44.0), vec2(104.0, 30.0));
     let queue = Rect::from_min_size(pos2(go.min.x - 132.0, go.min.y), vec2(122.0, 30.0));
     let qresp = ui.interact(queue, egui::Id::new("export-queue-send"), Sense::click());
-    ui.painter().rect_stroke(queue, 15.0, egui::Stroke::new(1.0, if qresp.hovered() { t.text } else { t.text_dim }), egui::StrokeKind::Inside);
+    let cr = if t.radius >= 6.0 { t.radius } else { 15.0 };
+    ui.painter().rect_stroke(queue, cr, egui::Stroke::new(1.0, if qresp.hovered() { t.text } else { t.text_dim }), egui::StrokeKind::Inside);
     ui.painter().text(queue.center(), Align2::CENTER_CENTER, tl!("Send to Queue"), Tokens::semibold(12.5), t.text);
     reg.add("export.sendToQueue", queue, "Send to Queue");
     let resp = ui.interact(go, egui::Id::new("export-go"), Sense::click());
-    ui.painter().rect_filled(go, 15.0, if resp.hovered() { t.accent_hover } else { t.accent });
-    ui.painter().text(go.center(), Align2::CENTER_CENTER, tl!("Export"), Tokens::semibold(13.0), Color32::WHITE);
+    ui.painter().rect_filled(go, cr, if resp.hovered() { t.accent_hover } else { t.primary_bg });
+    ui.painter().text(go.center(), Align2::CENTER_CENTER, tl!("Export"), Tokens::semibold(13.0), t.primary_text);
     reg.add("export.button", go, "Export");
     reg.flush(app);
     if resp.clicked() {
@@ -1458,8 +1459,9 @@ pub fn quick_export(app: &mut FilmcraftApp, ctx: &egui::Context, anchor: egui::P
             ui.add_space(4.0);
             ui.label(egui::RichText::new(tlf!("Estimated file size: {size}", size = est.as_deref().unwrap_or("–"))).color(t.text_dim).size(11.5));
             ui.with_layout(egui::Layout::right_to_left(egui::Align::Center), |ui| {
+                let cr = egui::CornerRadius::same(if t.radius >= 6.0 { t.radius as u8 } else { 12 });
                 let r = ui.add(
-                    egui::Button::new(egui::RichText::new(tl!("Export")).color(Color32::WHITE)).fill(t.accent).corner_radius(12.0).min_size(vec2(90.0, 26.0)),
+                    egui::Button::new(egui::RichText::new(tl!("Export")).color(t.primary_text)).fill(t.primary_bg).corner_radius(cr).min_size(vec2(90.0, 26.0)),
                 );
                 reg.add("quickExport.go", r.rect, "Export");
                 go = r.clicked();

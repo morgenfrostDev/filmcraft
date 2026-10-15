@@ -355,6 +355,7 @@ fn view_menu_and_settings_name_each_color_theme_alike() {
         ("view.theme.dark", "settings.appearance.darkTheme.darkest"),
         ("view.theme.medium", "settings.appearance.darkTheme.dark"),
         ("view.theme.light", "settings.appearance.lightTheme.light"),
+        ("view.theme.shadesOfPurple", "settings.appearance.darkTheme.shadesOfPurple"),
     ] {
         let found = d.ok("ui.elements", json!({"prefix": id}));
         let choice = found.as_array().unwrap().iter().find(|e| e["id"] == json!(id)).unwrap();
@@ -401,6 +402,12 @@ fn appearance_labels_and_tooltips_take_effect() {
     assert_eq!(d.pref("appearance.colorTheme"), "darkest");
     assert_eq!((d.pref("appearance.appearanceMode"), d.pref("appearance.darkTheme")), (json!("dark"), json!("darkest")));
     assert_eq!(d.inspect()["ui"]["dark"], true);
+
+    d.menu("view.theme.shadesOfPurple");
+    assert_eq!(d.pref("appearance.colorTheme"), "shadesOfPurple");
+    assert_eq!((d.pref("appearance.appearanceMode"), d.pref("appearance.darkTheme")), (json!("dark"), json!("shadesOfPurple")));
+    assert_eq!(d.inspect()["ui"]["dark"], true);
+    assert_eq!(d.harness.state().tokens.kind, filmcraft_ui_egui::theme::ThemeKind::ShadesOfPurple);
 
     // label names show in Edit ▸ Label
     d.menu("app.settings.labels");
