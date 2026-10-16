@@ -18,8 +18,7 @@ pub const GITHUB: &str = "https://github.com/storytold/filmcraft";
 pub const ISSUES: &str = "https://github.com/storytold/filmcraft/issues";
 
 /// (command id, label, url) for every link, in menu order.
-pub const ALL: [(&str, &str, &str); 5] = [
-    ("help.discord", "Join the ArtCraft Discord…", DISCORD),
+pub const ALL: [(&str, &str, &str); 4] = [
     ("help.website", "ArtCraft Website", WEBSITE),
     ("help.appPage", "FilmCraft on getartcraft.com", APP_PAGE),
     ("help.github", "FilmCraft on GitHub", GITHUB),
