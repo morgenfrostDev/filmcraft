@@ -47,6 +47,7 @@ pub fn show(app: &mut FilmcraftApp, ui: &mut egui::Ui, rect: Rect) {
     let y = recent(app, ui, rect, 90.0 + 150.0 + 36.0);
     // Project links.
     // ArtCraft wordmark (first-party trademark, docs/brand/), then the section title.
+    crate::brand::paint_wordmark(ui, rect.min + vec2(24.0, y), 15.0, app.ui.dark);
     let mut x = rect.min.x + 24.0;
     for (i, (id, label, url)) in crate::links::ALL.iter().take(4).enumerate() {
         let g = ui.painter().layout_no_wrap(label.to_string(), Tokens::ui(13.0), t.text);
